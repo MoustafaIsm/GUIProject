@@ -1,0 +1,73 @@
+CREATE DATABASE WSMS_database
+go
+
+use WSMS_database
+go
+
+CREATE TABLE  Employee  (
+   employeeID  int,
+   firstName  varchar(25),
+   lastName  varchar(25),
+   age  int,
+   salary  int,
+   employmentDate  Date,
+   position  varchar(25),
+  PRIMARY KEY ( employeeID )
+);
+go
+
+CREATE TABLE  Orders  (
+   orderID  int,
+   dateMade  Date,
+   employeeID  int,
+   totalCost  int,
+  PRIMARY KEY ( orderID ),
+  FOREIGN KEY ( employeeID ) REFERENCES  Employee ( employeeID )
+);
+go
+
+CREATE TABLE  Items  (
+   itemID  int,
+   name  varchar(25),
+   brand  varchar(25),
+   category  varchar(25),
+   price  int,
+   cost  int,
+   expireDate  Date,
+   stockCount  int,
+   threshold  int,
+   beyondThreshold  bit,
+  PRIMARY KEY ( itemID )
+);
+go
+
+CREATE TABLE  Invoices  (
+   invoiceID  int,
+   dateSold  Date,
+   totalPrice  int,
+   employeeID  int,
+  PRIMARY KEY ( invoiceID ),
+  FOREIGN KEY ( employeeID ) REFERENCES  Employee ( employeeID )
+);
+go
+
+CREATE TABLE  OrderToRecieve  (
+   orderID  int,
+   itemID  int,
+   arrivingDate  Date,
+  PRIMARY KEY ( orderID ,  itemID ),
+  FOREIGN KEY ( orderID ) REFERENCES  Orders ( orderID ),
+  FOREIGN KEY ( itemID ) REFERENCES  Items ( itemID )
+);
+go
+
+CREATE TABLE  InvoicesMade  (
+   invoiceID  int,
+   itemID  int,
+   itemCount  int,
+  PRIMARY KEY ( invoiceID ,  itemID ),
+  FOREIGN KEY ( invoiceID ) REFERENCES  Invoices ( invoiceID ),
+  FOREIGN KEY ( itemID ) REFERENCES  Items ( itemID )
+);
+go
+
