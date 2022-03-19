@@ -12,6 +12,7 @@ CREATE TABLE  Employee  (
    salary  int,
    employmentDate  Date,
    position  varchar(25),
+   passsword varchar(25),
   PRIMARY KEY ( employeeID )
 );
 go
@@ -33,7 +34,6 @@ CREATE TABLE  Items  (
    category  varchar(25),
    price  int,
    cost  int,
-   expireDate  Date,
    stockCount  int,
    threshold  int,
    beyondThreshold  bit,
