@@ -99,7 +99,7 @@ public class PanelSalesManager extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButton1.setText("Create Invoice");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

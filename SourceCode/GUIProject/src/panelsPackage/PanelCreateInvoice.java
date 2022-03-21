@@ -48,7 +48,7 @@ public class PanelCreateInvoice extends javax.swing.JPanel {
 
         jTextField1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jButton2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButton2.setText("Add Item");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -112,7 +112,7 @@ public class PanelCreateInvoice extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jButton1.setText("Done");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -139,7 +139,7 @@ public class PanelCreateInvoice extends javax.swing.JPanel {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

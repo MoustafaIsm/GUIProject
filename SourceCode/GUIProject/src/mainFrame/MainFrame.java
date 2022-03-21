@@ -7,6 +7,9 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import panelsPackage.PanelAccountant;
+import panelsPackage.PanelLogin;
+import panelsPackage.PanelSalesManager;
+import panelsPackage.PanelAdminstrator;
 import panelsPackage.PanelSalesManager;
 
 public class MainFrame {
@@ -26,7 +29,8 @@ public class MainFrame {
         CardLayout layout = new CardLayout();
         JPanel mainPanel = new JPanel(layout);
         
-        mainPanel.add(new PanelAccountant());
+        mainPanel.add(new PanelSalesManager());
+        //mainPanel.add(new PanelAccountant());
         
         f.add(mainPanel);
         f.setVisible(true);

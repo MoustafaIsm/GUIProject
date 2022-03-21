@@ -57,7 +57,7 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(tb_orderDetails);
 
-        btn_removeOrder.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        btn_removeOrder.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btn_removeOrder.setText("Remove");
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
