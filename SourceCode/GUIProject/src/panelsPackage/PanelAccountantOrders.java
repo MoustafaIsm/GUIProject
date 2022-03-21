@@ -38,17 +38,17 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
 
         tb_orderDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Item ID", "Count", "Arriving Date", "Date Made", "Cost"
+                "Item ID", "Count", "Cost"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -58,7 +58,7 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
         jScrollPane1.setViewportView(tb_orderDetails);
 
         btn_removeOrder.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btn_removeOrder.setText("Remove");
+        btn_removeOrder.setText("Order recieved");
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel1.setText("Details of order: <ID>");
