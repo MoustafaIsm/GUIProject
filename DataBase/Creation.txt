@@ -5,18 +5,18 @@ use WSMS_database
 go
 
 CREATE TABLE  Employee  (
-   employeeID  int PRIMARY KEY AUTO INCREMENT,
+   employeeID  int PRIMARY KEY IDENTITY(1,1),
    firstName  varchar(25),
    lastName  varchar(25),
    age  int,
    salary  int,
    position  varchar(25),
-   passsword varchar(25)
+   password varchar(25)
 );
 go
 
 CREATE TABLE  Orders  (
-   orderID  int PRIMARY KEY AUTO INCREMENT,
+   orderID  int PRIMARY KEY IDENTITY(1,1),
    dateMade  Date,
    employeeID  int,
    totalCost  int,
@@ -39,7 +39,7 @@ CREATE TABLE  Items  (
 go
 
 CREATE TABLE  Invoices  (
-   invoiceID  int PRIMARY KEY AUTO INCREMENT,
+   invoiceID  int PRIMARY KEY IDENTITY(1,1),
    dateSold  Date,
    totalPrice  int,
    employeeID  int,
