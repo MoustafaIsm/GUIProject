@@ -5,16 +5,23 @@
  */
 package panelsPackage;
 
+import database.DbHelper;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import modelsPackage.Order;
+import modelsPackage.OrderModel;
+
 /**
  *
  * @author Moust
  */
 public class PanelAccountantOrders extends javax.swing.JPanel {
 
-    /**
-     * Creates new form PanelAccountantOrders
-     */
-    public PanelAccountantOrders() {
+    private int orderId;
+    
+    public PanelAccountantOrders(int id) {
+        orderId = id;
         initComponents();
     }
 
@@ -28,6 +35,9 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
+        String[] header = new String [] {"Item ID", "Count"};
+        Order order = db.getOrder(orderId);
+        orderModel = new OrderModel(order, header);
         tb_orderDetails = new javax.swing.JTable();
         btn_removeOrder = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -36,32 +46,19 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
 
-        tb_orderDetails.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
-            },
-            new String [] {
-                "Item ID", "Count", "Cost"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        tb_orderDetails.setModel(orderModel);
         jScrollPane1.setViewportView(tb_orderDetails);
 
         btn_removeOrder.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btn_removeOrder.setText("Order recieved");
+        btn_removeOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_removeOrderActionPerformed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel1.setText("Details of order: <ID>");
+        jLabel1.setText("Details of order: " + orderId);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -80,7 +77,7 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(278, 278, 278)
                 .addComponent(jLabel1)
-                .addContainerGap(276, Short.MAX_VALUE))
+                .addContainerGap(372, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -95,6 +92,13 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btn_removeOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_removeOrderActionPerformed
+        db.removeOrder(orderId);
+        db.addItemsToDb(orderModel);
+        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        topFrame.dispatchEvent(new WindowEvent(topFrame, WindowEvent.WINDOW_CLOSING));
+    }//GEN-LAST:event_btn_removeOrderActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_removeOrder;
@@ -102,4 +106,8 @@ public class PanelAccountantOrders extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tb_orderDetails;
     // End of variables declaration//GEN-END:variables
+
+    private DbHelper db = new DbHelper();
+    private OrderModel orderModel;
+
 }

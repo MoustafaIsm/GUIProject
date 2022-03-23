@@ -5,7 +5,17 @@
  */
 package panelsPackage;
 
+import database.DbHelper;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.JList;
+import modelsPackage.Item;
+import modelsPackage.ItemModel;
 
 /**
  *
@@ -29,12 +39,17 @@ public class PanelAccountant extends javax.swing.JPanel {
         lb_icon = new javax.swing.JLabel();
         panelItems = new javax.swing.JPanel();
         sp_items = new javax.swing.JScrollPane();
+        String[] headers = new String [] {"ID", "Name", "Brand", "Stock", "Category"};
+        ArrayList<Item> rows = new ArrayList<>();
+        itemModel = new ItemModel(rows, headers, "Accountant");
+        getItems();
         tb_items = new javax.swing.JTable();
         lb_items = new javax.swing.JLabel();
         panelOrders = new javax.swing.JPanel();
         sp_orders = new javax.swing.JScrollPane();
-        ls_orders = new javax.swing.JList<>();
+        ls_orders = new javax.swing.JList<>(getOrdersList());
         lb_orders = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(4, 86, 146), 3));
         setMinimumSize(new java.awt.Dimension(1000, 800));
@@ -44,24 +59,7 @@ public class PanelAccountant extends javax.swing.JPanel {
         lb_icon.setHorizontalAlignment(javax.swing.JLabel.CENTER);
         lb_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Icon.png"))); // NOI18N
 
-        tb_items.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        tb_items.getTableHeader().setFont(new java.awt.Font("Tahoma", 0, 18));
-        tb_items.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "ID", "Name", "Brand", "Category", "Count"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.String.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        tb_items.setModel(itemModel);
         tb_items.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         tb_items.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
         sp_items.setViewportView(tb_items);
@@ -90,7 +88,6 @@ public class PanelAccountant extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        ls_orders.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         ls_orders.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 openOrders(evt);
@@ -110,7 +107,7 @@ public class PanelAccountant extends javax.swing.JPanel {
                 .addGroup(panelOrdersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(sp_orders)
                     .addGroup(panelOrdersLayout.createSequentialGroup()
-                        .addComponent(lb_orders, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lb_orders, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                         .addContainerGap())))
         );
         panelOrdersLayout.setVerticalGroup(
@@ -122,6 +119,13 @@ public class PanelAccountant extends javax.swing.JPanel {
                 .addComponent(sp_orders, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/refreshIcon.jpg"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -135,13 +139,20 @@ public class PanelAccountant extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(271, 271, 271)
                 .addComponent(lb_icon)
-                .addContainerGap(303, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lb_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lb_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelOrders, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -151,17 +162,34 @@ public class PanelAccountant extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void openOrders(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openOrders
-        JFrame orderFrame = new JFrame("Order Details");
-        orderFrame.setSize(800, 650);
-        orderFrame.setLocationRelativeTo(null);
-        orderFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        orderFrame.setResizable(false);
-        orderFrame.add(new PanelAccountantOrders());
-        orderFrame.setVisible(true);
+        JList list = (JList) evt.getSource();
+        if (evt.getClickCount() == 2) {
+            if (list.getSelectedValue() != null) {
+                String[] order = list.getSelectedValue().toString().split(" ");
+                int id = Integer.parseInt(order[1]);
+                JFrame orderFrame = new JFrame("Order Details");
+                orderFrame.setSize(800, 650);
+                orderFrame.setLocationRelativeTo(null);
+                orderFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                orderFrame.setResizable(false);
+
+                orderFrame.add(new PanelAccountantOrders(id));
+                orderFrame.setVisible(true);
+            }
+        }
     }//GEN-LAST:event_openOrders
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        getItems();
+        listModel.setSize(0);
+        getOrdersList();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_refresh;
+    private javax.swing.JButton btn_refresh1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel lb_icon;
     private javax.swing.JLabel lb_items;
     private javax.swing.JLabel lb_orders;
@@ -172,4 +200,40 @@ public class PanelAccountant extends javax.swing.JPanel {
     private javax.swing.JScrollPane sp_orders;
     private javax.swing.JTable tb_items;
     // End of variables declaration//GEN-END:variables
+
+    private ItemModel itemModel;
+    private DbHelper db = new DbHelper();
+    private DefaultListModel<String> listModel;
+
+    private void getItems() {
+        itemModel.setRowCount(0);
+        ResultSet rs = db.getItems("SELECT * FROM Items");
+        try {
+            while (rs.next()) {
+                Item i = new Item(rs.getInt("itemID"), rs.getString("name"), rs.getString("brand"), rs.getString("category"), rs.getInt("cost"), rs.getInt("price"), rs.getInt("stockCount"), rs.getInt("threshold"), rs.getBoolean("beyondThreshold"));
+                itemModel.addRow(i);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    private DefaultListModel getOrdersList() {
+        listModel = new DefaultListModel<>();
+        ResultSet rs = db.getOrders("SELECT otr.orderID, totalCost, arrivingDate FROM Orders as o,OrderToRecieve as otr WHERE o.orderID = otr.orderID ");
+        int previousID = -1;
+        try {
+            while (rs.next()) {
+                if (rs.getInt("orderID") != previousID) {
+                    previousID = rs.getInt("orderID");
+                    listModel.addElement("ID: " + rs.getInt("orderID") + " Cost: " + rs.getInt("totalCost") + " ArrivingDate: " + rs.getString("arrivingDate"));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PanelAccountant.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return listModel;
+    }
+
 }

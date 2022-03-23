@@ -5,7 +5,21 @@
  */
 package panelsPackage;
 
-import javax.swing.JFrame;
+import database.DbHelper;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import modelsPackage.Employee;
+import modelsPackage.EmployeeModel;
+import modelsPackage.Invoice;
+import modelsPackage.InvoiceModel;
+import modelsPackage.Item;
+import modelsPackage.ItemModel;
+import modelsPackage.Order;
+import modelsPackage.OrderModel;
 
 /**
  *
@@ -31,13 +45,18 @@ public class PanelAdminstrator extends javax.swing.JPanel {
 
         tab_adminstrator = new javax.swing.JTabbedPane();
         panel_stock = new javax.swing.JPanel();
-        sp_category = new javax.swing.JScrollPane();
-        ls_adminCategory = new javax.swing.JList<>();
         sp_items = new javax.swing.JScrollPane();
+        String[] header1 = new String [] {"ID", "Name", "Brand", "Stock", "Price", "Cost"};
+        ArrayList<Item> itemsArrayList = new ArrayList<>();
+        itemModel = new ItemModel(itemsArrayList, header1, "AdminStock");
         tb_items = new javax.swing.JTable();
         panel_employee = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
+        String[] headers = {"ID", "First Name", "Last Name", "Age", "Salary", "Position"};
+        ArrayList<Employee> employeeRows = new ArrayList<>();
+        employeeModel = new EmployeeModel(employeeRows, headers);
+        getEmployees();
         tb_employee = new javax.swing.JTable();
         tf_fname = new javax.swing.JTextField();
         tf_lname = new javax.swing.JTextField();
@@ -51,33 +70,34 @@ public class PanelAdminstrator extends javax.swing.JPanel {
         jLabel9 = new javax.swing.JLabel();
         btn_removeEmployee = new javax.swing.JButton();
         btn_addEmployee = new javax.swing.JButton();
+        tf_password = new javax.swing.JPasswordField();
+        jLabel2 = new javax.swing.JLabel();
         panel_orders = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
         jLabel31 = new javax.swing.JLabel();
         tf_id = new javax.swing.JTextField();
         btn_addItem = new javax.swing.JButton();
-        jLabel32 = new javax.swing.JLabel();
-        tf_brand = new javax.swing.JTextField();
-        jLabel33 = new javax.swing.JLabel();
-        tf_name = new javax.swing.JTextField();
-        jLabel34 = new javax.swing.JLabel();
-        tf_category = new javax.swing.JTextField();
         jLabel35 = new javax.swing.JLabel();
         tf_count = new javax.swing.JTextField();
-        jLabel36 = new javax.swing.JLabel();
-        tf_price = new javax.swing.JTextField();
-        jLabel37 = new javax.swing.JLabel();
-        tf_cost = new javax.swing.JTextField();
-        datePicker1 = new com.github.lgooddatepicker.components.DatePicker();
+        tf_date = new com.github.lgooddatepicker.components.DatePicker();
         jLabel1 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        tf_totalCost = new javax.swing.JTextField();
         jScrollPane3 = new javax.swing.JScrollPane();
+        String[] header = new String [] {"Item ID", "Count"};
+        Order order = new Order();
+        orderModel = new OrderModel(order, header);
         tb_orders = new javax.swing.JTable();
         btn_OrdersDone = new javax.swing.JButton();
         panel_invoices = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
+        String[] headers1 = new String [] {"Invoice ID", "Employee ID", "Total price", "Date"};
+        ArrayList<Invoice> invoices = new ArrayList<>();
+        invoiceModel = new InvoiceModel(invoices, headers1);
+        fillInvoices();
         tb_invoices = new javax.swing.JTable();
-        btn_invoiceDone = new javax.swing.JButton();
         lb_icon = new javax.swing.JLabel();
+        btn_refresh = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(4, 86, 146), 3));
         setMinimumSize(new java.awt.Dimension(1000, 800));
@@ -85,58 +105,25 @@ public class PanelAdminstrator extends javax.swing.JPanel {
 
         panel_stock.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(4, 86, 146), 3));
 
-        ls_adminCategory.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        ls_adminCategory.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                ls_adminCategoryMouseClicked(evt);
-            }
-        });
-        sp_category.setViewportView(ls_adminCategory);
-
-        tb_items.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "Name", "Brand", "Price", "Stock"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        getItems();
+        tb_items.setModel(itemModel);
         sp_items.setViewportView(tb_items);
 
         javax.swing.GroupLayout panel_stockLayout = new javax.swing.GroupLayout(panel_stock);
         panel_stock.setLayout(panel_stockLayout);
         panel_stockLayout.setHorizontalGroup(
             panel_stockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_stockLayout.createSequentialGroup()
-                .addGap(7, 7, 7)
-                .addComponent(sp_category, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(sp_items, javax.swing.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_stockLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(sp_items, javax.swing.GroupLayout.DEFAULT_SIZE, 959, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panel_stockLayout.setVerticalGroup(
             panel_stockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_stockLayout.createSequentialGroup()
-                .addGap(79, 79, 79)
-                .addGroup(panel_stockLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(sp_category)
-                    .addComponent(sp_items, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE))
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(sp_items, javax.swing.GroupLayout.PREFERRED_SIZE, 571, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         tab_adminstrator.addTab("Stock", panel_stock);
@@ -144,28 +131,10 @@ public class PanelAdminstrator extends javax.swing.JPanel {
         panel_employee.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(4, 86, 146), 3));
         panel_employee.setPreferredSize(new java.awt.Dimension(800, 600));
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel3.setText("Employee Details");
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
 
-        tb_employee.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "First Name", "Last Name", "Age", "Salary", "Position"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        tb_employee.setModel(employeeModel);
         jScrollPane1.setViewportView(tb_employee);
 
         co_position.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Accountant", "Sales Manager", "Assistant", "Others" }));
@@ -187,58 +156,65 @@ public class PanelAdminstrator extends javax.swing.JPanel {
             }
         });
 
-        btn_addEmployee.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btn_addEmployee.setText("Add Employee");
+        btn_addEmployee.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btn_addEmployee.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_addEmployeeActionPerformed(evt);
             }
         });
 
+        jLabel2.setText("Password:");
+
         javax.swing.GroupLayout panel_employeeLayout = new javax.swing.GroupLayout(panel_employee);
         panel_employee.setLayout(panel_employeeLayout);
         panel_employeeLayout.setHorizontalGroup(
             panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_employeeLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addGap(21, 21, 21))
-            .addGroup(panel_employeeLayout.createSequentialGroup()
-                .addGap(41, 41, 41)
-                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tf_fname, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addGap(18, 18, 18)
-                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tf_lname, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addGap(18, 18, 18)
-                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tf_age, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addGap(18, 18, 18)
-                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_employeeLayout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(panel_employeeLayout.createSequentialGroup()
-                        .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tf_salary, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7))
-                        .addGap(18, 18, 18)
-                        .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panel_employeeLayout.createSequentialGroup()
-                                .addComponent(jLabel9)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(panel_employeeLayout.createSequentialGroup()
-                                .addComponent(co_position, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
-                                .addComponent(btn_addEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(37, 37, 37))))))
             .addGroup(panel_employeeLayout.createSequentialGroup()
                 .addGap(387, 387, 387)
                 .addComponent(btn_removeEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_employeeLayout.createSequentialGroup()
+                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panel_employeeLayout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tf_fname, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addGap(18, 18, 18)
+                        .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tf_lname, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6))
+                        .addGap(18, 18, 18)
+                        .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tf_age, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8))
+                        .addGap(18, 18, 18)
+                        .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_employeeLayout.createSequentialGroup()
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(panel_employeeLayout.createSequentialGroup()
+                                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(tf_salary, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel7))
+                                .addGap(18, 18, 18)
+                                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(co_position, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel9))
+                                .addGap(31, 31, 31)
+                                .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panel_employeeLayout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(panel_employeeLayout.createSequentialGroup()
+                                        .addComponent(tf_password, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                                        .addComponent(btn_addEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                    .addGroup(panel_employeeLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1)))
+                .addGap(21, 21, 21))
         );
         panel_employeeLayout.setVerticalGroup(
             panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -251,7 +227,8 @@ public class PanelAdminstrator extends javax.swing.JPanel {
                     .addComponent(jLabel6)
                     .addComponent(jLabel7)
                     .addComponent(jLabel8)
-                    .addComponent(jLabel9))
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_employeeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tf_fname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -259,7 +236,8 @@ public class PanelAdminstrator extends javax.swing.JPanel {
                     .addComponent(tf_age, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tf_salary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(co_position, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_addEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btn_addEmployee, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tf_password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(24, 24, 24)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -278,33 +256,11 @@ public class PanelAdminstrator extends javax.swing.JPanel {
 
         tf_id.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
-        btn_addItem.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btn_addItem.setText("Add Item");
-
-        jLabel32.setText("name:");
-
-        tf_brand.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        tf_brand.addActionListener(new java.awt.event.ActionListener() {
+        btn_addItem.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        btn_addItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tf_brandjTextField6ActionPerformed(evt);
-            }
-        });
-
-        jLabel33.setText("brand:");
-
-        tf_name.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        tf_name.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tf_namejTextField7ActionPerformed(evt);
-            }
-        });
-
-        jLabel34.setText("category:");
-
-        tf_category.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        tf_category.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tf_categoryjTextField8ActionPerformed(evt);
+                btn_addItemActionPerformed(evt);
             }
         });
 
@@ -317,117 +273,63 @@ public class PanelAdminstrator extends javax.swing.JPanel {
             }
         });
 
-        jLabel36.setText("price/unit:");
-
-        tf_price.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-
-        jLabel37.setText("cost/unit:");
-
-        tf_cost.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-
         jLabel1.setText("Order arriving date:");
+
+        jLabel10.setText("Order total cost:");
 
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
         jPanel12Layout.setHorizontalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addGap(46, 46, 46)
+                        .addComponent(jLabel31)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tf_id, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel35)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tf_count, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jLabel36)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(tf_price, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel37)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tf_cost, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(43, 43, 43)
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(datePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addComponent(jLabel31)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tf_id, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)
-                        .addComponent(jLabel32)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tf_name, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel33)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tf_brand, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel34)
+                        .addComponent(tf_date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tf_category, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(67, 67, 67))))
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tf_totalCost, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addGap(383, 383, 383)
+                        .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(88, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel31)
-                    .addComponent(tf_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel32)
-                    .addComponent(tf_brand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel33)
-                    .addComponent(tf_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel34)
-                    .addComponent(tf_category, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 2, Short.MAX_VALUE)
-                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel36)
-                            .addComponent(tf_price, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel37)
-                            .addComponent(tf_cost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel35)
-                            .addComponent(tf_count, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(28, 28, 28))
-                    .addGroup(jPanel12Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(datePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel10)
+                        .addComponent(tf_totalCost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel31)
+                        .addComponent(tf_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel35)
+                        .addComponent(tf_count, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(tf_date, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
-        tb_orders.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "ID", "Name", "Brand", "Category", "Count", "Total Cost"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        tb_orders.setModel(orderModel);
         jScrollPane3.setViewportView(tb_orders);
 
-        btn_OrdersDone.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btn_OrdersDone.setText("Create");
+        btn_OrdersDone.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btn_OrdersDone.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_OrdersDoneActionPerformed(evt);
@@ -447,7 +349,7 @@ public class PanelAdminstrator extends javax.swing.JPanel {
             .addGroup(panel_ordersLayout.createSequentialGroup()
                 .addGap(423, 423, 423)
                 .addComponent(btn_OrdersDone, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(428, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_ordersLayout.setVerticalGroup(
             panel_ordersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -466,29 +368,8 @@ public class PanelAdminstrator extends javax.swing.JPanel {
         panel_invoices.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(4, 86, 146), 3));
         panel_invoices.setMinimumSize(new java.awt.Dimension(800, 600));
 
-        tb_invoices.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Invoice ID", "Employee ID", "Total price", "Date"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        tb_invoices.setModel(invoiceModel);
         jScrollPane2.setViewportView(tb_invoices);
-
-        btn_invoiceDone.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        btn_invoiceDone.setText("Done");
 
         javax.swing.GroupLayout panel_invoicesLayout = new javax.swing.GroupLayout(panel_invoices);
         panel_invoices.setLayout(panel_invoicesLayout);
@@ -496,27 +377,28 @@ public class PanelAdminstrator extends javax.swing.JPanel {
             panel_invoicesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_invoicesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 959, Short.MAX_VALUE)
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_invoicesLayout.createSequentialGroup()
-                .addContainerGap(430, Short.MAX_VALUE)
-                .addComponent(btn_invoiceDone, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(421, 421, 421))
         );
         panel_invoicesLayout.setVerticalGroup(
             panel_invoicesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_invoicesLayout.createSequentialGroup()
                 .addGap(64, 64, 64)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
-                .addComponent(btn_invoiceDone, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(47, Short.MAX_VALUE))
+                .addContainerGap(135, Short.MAX_VALUE))
         );
 
         tab_adminstrator.addTab("Invoices", panel_invoices);
 
         lb_icon.setHorizontalAlignment(javax.swing.JLabel.CENTER);
         lb_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Icon.png"))); // NOI18N
+
+        btn_refresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/refreshIcon.jpg"))); // NOI18N
+        btn_refresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_refreshActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -525,14 +407,21 @@ public class PanelAdminstrator extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lb_icon)
-                .addGap(281, 281, 281))
+                .addGap(162, 162, 162)
+                .addComponent(btn_refresh, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40))
             .addComponent(tab_adminstrator)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lb_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(lb_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(46, 46, 46)
+                        .addComponent(btn_refresh, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(tab_adminstrator)
                 .addGap(9, 9, 9))
@@ -543,52 +432,68 @@ public class PanelAdminstrator extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_tf_countjTextField9ActionPerformed
 
-    private void tf_categoryjTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_categoryjTextField8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tf_categoryjTextField8ActionPerformed
-
-    private void tf_namejTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_namejTextField7ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tf_namejTextField7ActionPerformed
-
-    private void tf_brandjTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tf_brandjTextField6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tf_brandjTextField6ActionPerformed
-
     private void btn_addEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addEmployeeActionPerformed
-        // TODO add your handling code here:
+        if (!tf_fname.getText().isEmpty() && !tf_lname.getText().isEmpty() && !tf_age.getText().isEmpty() && !tf_salary.getText().isEmpty() && !String.valueOf(tf_password.getPassword()).isEmpty()) {
+            Employee e = new Employee(-1, tf_fname.getText(), tf_lname.getText(), Integer.parseInt(tf_age.getText()), Integer.parseInt(tf_salary.getText()), co_position.getSelectedItem().toString(), String.valueOf(tf_password.getPassword()));
+            db.insertEmployee(e);
+            getEmployees();
+        }
     }//GEN-LAST:event_btn_addEmployeeActionPerformed
 
     private void btn_removeEmployeeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_removeEmployeeActionPerformed
-        // TODO add your handling code here:
+        int id = (int) tb_employee.getValueAt(tb_employee.getSelectedRow(), 0);
+        db.deleteEmployee(id);
+        getEmployees();
     }//GEN-LAST:event_btn_removeEmployeeActionPerformed
 
-    private void ls_adminCategoryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ls_adminCategoryMouseClicked
-
-    }//GEN-LAST:event_ls_adminCategoryMouseClicked
-
     private void btn_OrdersDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_OrdersDoneActionPerformed
-        // TODO add your handling code here:
+        if (!tf_date.getText().isEmpty() && !tf_totalCost.getText().isEmpty()) {
+            Order order = orderModel.getOrder();
+            order.setId(-1);
+            order.setTotalCost(Integer.parseInt(tf_totalCost.getText()));
+            order.setDateArriving(tf_date.getDate());
+            order.setDateMade(LocalDate.now());
+            db.insertOrder(order);
+        }
     }//GEN-LAST:event_btn_OrdersDoneActionPerformed
 
+    private void btn_addItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addItemActionPerformed
+        if (!tf_id.getText().isEmpty() && !tf_count.getText().isEmpty()) {
+            orderModel.addRow(Integer.parseInt(tf_id.getText()), Integer.parseInt(tf_count.getText()));
+        }
+    }//GEN-LAST:event_btn_addItemActionPerformed
+
+    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
+        fillInvoices();
+        getItems();
+    }//GEN-LAST:event_btn_refreshActionPerformed
+
+    public void getEmployees() {
+        employeeModel.setRowCount(0);
+        ResultSet rs = db.getEmployee("SELECT * FROM Employee");
+        try {
+            while (rs.next()) {
+                Employee e = new Employee(rs.getInt("employeeID"), rs.getString("firstName"), rs.getString("lastName"), rs.getInt("age"), rs.getInt("salary"), rs.getString("position"), rs.getString("password"));
+                employeeModel.addRow(e);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PanelAdminstrator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_OrdersDone;
     private javax.swing.JButton btn_addEmployee;
     private javax.swing.JButton btn_addItem;
-    private javax.swing.JButton btn_invoiceDone;
+    private javax.swing.JButton btn_refresh;
     private javax.swing.JButton btn_removeEmployee;
     private javax.swing.JComboBox<String> co_position;
-    private com.github.lgooddatepicker.components.DatePicker datePicker1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel31;
-    private javax.swing.JLabel jLabel32;
-    private javax.swing.JLabel jLabel33;
-    private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
-    private javax.swing.JLabel jLabel36;
-    private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -599,12 +504,10 @@ public class PanelAdminstrator extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lb_icon;
-    private javax.swing.JList<String> ls_adminCategory;
     private javax.swing.JPanel panel_employee;
     private javax.swing.JPanel panel_invoices;
     private javax.swing.JPanel panel_orders;
     private javax.swing.JPanel panel_stock;
-    private javax.swing.JScrollPane sp_category;
     private javax.swing.JScrollPane sp_items;
     private javax.swing.JTabbedPane tab_adminstrator;
     private javax.swing.JTable tb_employee;
@@ -612,15 +515,45 @@ public class PanelAdminstrator extends javax.swing.JPanel {
     private javax.swing.JTable tb_items;
     private javax.swing.JTable tb_orders;
     private javax.swing.JTextField tf_age;
-    private javax.swing.JTextField tf_brand;
-    private javax.swing.JTextField tf_category;
-    private javax.swing.JTextField tf_cost;
     private javax.swing.JTextField tf_count;
+    private com.github.lgooddatepicker.components.DatePicker tf_date;
     private javax.swing.JTextField tf_fname;
     private javax.swing.JTextField tf_id;
     private javax.swing.JTextField tf_lname;
-    private javax.swing.JTextField tf_name;
-    private javax.swing.JTextField tf_price;
+    private javax.swing.JPasswordField tf_password;
     private javax.swing.JTextField tf_salary;
+    private javax.swing.JTextField tf_totalCost;
     // End of variables declaration//GEN-END:variables
+
+    private EmployeeModel employeeModel;
+    private OrderModel orderModel;
+    private InvoiceModel invoiceModel;
+    private ItemModel itemModel;
+    private DbHelper db = new DbHelper();
+
+    private void fillInvoices() {
+        invoiceModel.setRowCount(0);
+        ResultSet rs = db.getInvoices("SELECT * FROM Invoices");
+        try {
+            while (rs.next()) {
+                Invoice v = new Invoice(rs.getInt("invoiceID"), rs.getDate("dateSold").toLocalDate(), rs.getInt("totalPrice"), rs.getInt("employeeID"));
+                invoiceModel.addRow(v);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PanelAdminstrator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void getItems() {
+        itemModel.setRowCount(0);
+        ResultSet rs = db.getItems("SELECT * FROM Items");
+        try {
+            while (rs.next()) {
+                Item i = new Item(rs.getInt("itemID"), rs.getString("name"), rs.getString("brand"), rs.getString("category"), rs.getInt("cost"), rs.getInt("price"), rs.getInt("stockCount"), rs.getInt("threshold"), rs.getBoolean("beyondThreshold"));
+                itemModel.addRow(i);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
 }

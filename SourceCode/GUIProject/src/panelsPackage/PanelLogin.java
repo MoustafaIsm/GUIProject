@@ -5,16 +5,24 @@
  */
 package panelsPackage;
 
+import database.DbHelper;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+
 /**
  *
  * @author ali koteich
  */
 public class PanelLogin extends javax.swing.JPanel {
 
-    /**
-     * Creates new form PanelLogin
-     */
-    public PanelLogin() {
+    JPanel mainPanel;
+
+    public PanelLogin(JPanel p) {
+        mainPanel = p;
         initComponents();
     }
 
@@ -34,6 +42,7 @@ public class PanelLogin extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         tf_password = new javax.swing.JPasswordField();
         btn_login = new javax.swing.JButton();
+        l_error = new javax.swing.JLabel();
 
         setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(4, 86, 146), 3));
         setMinimumSize(new java.awt.Dimension(1000, 800));
@@ -61,13 +70,21 @@ public class PanelLogin extends javax.swing.JPanel {
         });
 
         btn_login.setText("Login");
+        btn_login.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_loginActionPerformed(evt);
+            }
+        });
+
+        l_error.setForeground(new java.awt.Color(255, 0, 0));
+        l_error.setText("              ");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 152, Short.MAX_VALUE)
+                .addGap(0, 73, Short.MAX_VALUE)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 921, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -85,8 +102,10 @@ public class PanelLogin extends javax.swing.JPanel {
                             .addComponent(tf_idLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(391, 391, 391))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(455, 455, 455))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(l_error, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(456, 456, 456))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -102,9 +121,11 @@ public class PanelLogin extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(tf_password, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(31, 31, 31)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(l_error, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(198, Short.MAX_VALUE))
+                .addContainerGap(194, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -116,6 +137,24 @@ public class PanelLogin extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_tf_passwordActionPerformed
 
+    private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
+        if (!tf_idLogin.getText().isEmpty() && !String.valueOf(tf_password.getPassword()).isEmpty()) {
+            String position = getPosition(tf_idLogin.getText(), String.valueOf(tf_password.getPassword()));
+            if(!position.contains("WRONG") || !position.contains("NO")){
+                CardLayout l = (CardLayout) mainPanel.getLayout();
+                if(position.equals("Sales Manager")){
+                    l.show(mainPanel, "sales");
+                }
+                if(position.equals("Accountant")){
+                    l.show(mainPanel, "accountant");
+                }
+                if(position.equals("Adminstrator")){
+                    l.show(mainPanel, "admin");
+                }
+            }
+        }
+    }//GEN-LAST:event_btn_loginActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_login;
@@ -123,7 +162,32 @@ public class PanelLogin extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel l_error;
     private javax.swing.JTextField tf_idLogin;
     private javax.swing.JPasswordField tf_password;
     // End of variables declaration//GEN-END:variables
+
+    private String getPosition(String id, String password) {
+        ResultSet rs = db.getEmployee(Integer.parseInt(id));
+        try {
+            if (rs != null) {
+                if (rs.next()) {
+                    int foundID = rs.getInt("employeeID");
+                    String foundPassword = rs.getString("password");
+                    String position = rs.getString("position");
+                    if(Integer.parseInt(id) == foundID && password.equals(foundPassword))
+                        return position;
+                    if(Integer.parseInt(id) != foundID || !password.equals(foundPassword))
+                        return "WRONG ID OR PASSWORD!!";
+                }
+            } else {
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return "NO SUCH EMPLOYEE ID!!";
+        }
+        return "NO SUCH EMPLOYEE ID!!";
+    }
+
+    DbHelper db = new DbHelper();
 }

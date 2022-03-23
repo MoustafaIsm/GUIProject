@@ -1,24 +1,69 @@
 package modelsPackage;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Order {
 
     private int id;
-    private Date dateMade;
-    private Date dateArriving;
-    private int employeeID;
+    private LocalDate dateMade;
+    private LocalDate dateArriving;
     private int totalCost;
-    private HashMap<Item, Integer> itemsToOrder;
+    private ArrayList<Integer> itemsID;
+    private ArrayList<Integer> itemsCount;
 
-    public Order(int id, Date dateMade, Date dateArriving, int employeeID, int totalCost, HashMap<Item, Integer> itemsToOrder) {
+    public Order(int id, LocalDate dateMade, LocalDate dateArriving, int totalCost, ArrayList<Integer> itemsID, ArrayList<Integer> itemsCount) {
         this.id = id;
         this.dateMade = dateMade;
         this.dateArriving = dateArriving;
-        this.employeeID = employeeID;
         this.totalCost = totalCost;
-        this.itemsToOrder = itemsToOrder;
+        this.itemsID = itemsID;
+        this.itemsCount = itemsCount;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setDateMade(LocalDate dateMade) {
+        this.dateMade = dateMade;
+    }
+
+    public void setDateArriving(LocalDate dateArriving) {
+        this.dateArriving = dateArriving;
+    }
+
+    public void setTotalCost(int totalCost) {
+        this.totalCost = totalCost;
+    }
+
+    public LocalDate getDateMade() {
+        return dateMade;
+    }
+
+    public LocalDate getDateArriving() {
+        return dateArriving;
+    }
+
+    public int getTotalCost() {
+        return totalCost;
+    }
+    
+    
+
+    public Order() {
+        itemsID = new ArrayList<>();
+        itemsCount = new ArrayList<>();
+    }
+
+    public ArrayList<Integer> getItemsID() {
+        return itemsID;
+    }
+
+    public ArrayList<Integer> getItemsCount() {
+        return itemsCount;
     }
 
     @Override
@@ -33,4 +78,10 @@ public class Order {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "ID: " + id + " Cost: " + totalCost + " Arriving date: " + dateArriving;
+    }
+
+    
 }

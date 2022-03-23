@@ -10,6 +10,7 @@ public class Item {
     private int stockCount;
     private int threshold;
     private boolean beyondThreshold;
+    private int count;
 
     public Item(int id, String name, String brand, String category, int cost, int price, int stockCount, int threshold, boolean beyondThreshold) {
         this.id = id;
@@ -21,6 +22,51 @@ public class Item {
         this.stockCount = stockCount;
         this.threshold = threshold;
         this.beyondThreshold = beyondThreshold;
+    }
+
+    public Item(int id, int count) {
+        this.id = id;
+        this.count = count;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public int getStockCount() {
+        return stockCount;
+    }
+
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public boolean isBeyondThreshold() {
+        return beyondThreshold;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     @Override

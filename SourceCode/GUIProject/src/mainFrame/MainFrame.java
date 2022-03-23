@@ -13,14 +13,20 @@ import panelsPackage.PanelAdminstrator;
 import panelsPackage.PanelSalesManager;
 
 public class MainFrame {
+    
+    
+    
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (UnsupportedLookAndFeelException ex) {
             System.err.println("Failed to initialize LaF");
         }
-        
-        JFrame f = new JFrame("test");
+        new MainFrame();
+    }
+    
+    public MainFrame(){
+        JFrame f = new JFrame("Warehouse Managment Sysytem");
         f.setSize(1000, 800);
         f.setResizable(false);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,9 +34,11 @@ public class MainFrame {
         
         CardLayout layout = new CardLayout();
         JPanel mainPanel = new JPanel(layout);
-        
-        mainPanel.add(new PanelSalesManager());
-        //mainPanel.add(new PanelAccountant());
+         
+        mainPanel.add("login", new PanelLogin(mainPanel));
+        mainPanel.add("admin", new PanelAdminstrator());
+        mainPanel.add("accountant", new PanelAccountant());
+        mainPanel.add("sales", new PanelSalesManager());
         
         f.add(mainPanel);
         f.setVisible(true);

@@ -18,9 +18,7 @@ go
 CREATE TABLE  Orders  (
    orderID  int PRIMARY KEY IDENTITY(1,1),
    dateMade  Date,
-   employeeID  int,
    totalCost  int,
-  FOREIGN KEY ( employeeID ) REFERENCES  Employee ( employeeID )
 );
 go
 
@@ -50,6 +48,7 @@ go
 CREATE TABLE  OrderToRecieve  (
    orderID  int,
    itemID  int,
+   itemCount int,
    arrivingDate  Date,
   PRIMARY KEY ( orderID ,  itemID ),
   FOREIGN KEY ( orderID ) REFERENCES  Orders ( orderID ),

@@ -20,6 +20,34 @@ public class Employee {
         this.password = password;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Employee) {
