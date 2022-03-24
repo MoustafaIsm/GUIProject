@@ -12,6 +12,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import modelsPackage.Employee;
 import modelsPackage.EmployeeModel;
 import modelsPackage.Invoice;
@@ -96,6 +98,8 @@ public class PanelAdminstrator extends javax.swing.JPanel {
         invoiceModel = new InvoiceModel(invoices, headers1);
         fillInvoices();
         tb_invoices = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        ls_orders = new javax.swing.JList<>();
         lb_icon = new javax.swing.JLabel();
         btn_refresh = new javax.swing.JButton();
 
@@ -143,11 +147,11 @@ public class PanelAdminstrator extends javax.swing.JPanel {
 
         jLabel6.setText("Last Name:");
 
-        jLabel7.setText("Salary");
+        jLabel7.setText("Salary:");
 
         jLabel8.setText("Age:");
 
-        jLabel9.setText("Position");
+        jLabel9.setText("Position:");
 
         btn_removeEmployee.setText("Remove Employee");
         btn_removeEmployee.addActionListener(new java.awt.event.ActionListener() {
@@ -296,30 +300,29 @@ public class PanelAdminstrator extends javax.swing.JPanel {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(tf_date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tf_totalCost, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel12Layout.createSequentialGroup()
                         .addGap(383, 383, 383)
                         .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(88, Short.MAX_VALUE))
+                .addContainerGap(81, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel31)
+                    .addComponent(tf_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel35)
+                    .addComponent(tf_count, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tf_date, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
                     .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel10)
-                        .addComponent(tf_totalCost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel31)
-                        .addComponent(tf_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel35)
-                        .addComponent(tf_count, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(tf_date, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1)))
+                        .addComponent(tf_totalCost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                 .addComponent(btn_addItem, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -371,24 +374,32 @@ public class PanelAdminstrator extends javax.swing.JPanel {
         tb_invoices.setModel(invoiceModel);
         jScrollPane2.setViewportView(tb_invoices);
 
+        getOrdersList();
+        ls_orders.setModel(listModel);
+        jScrollPane4.setViewportView(ls_orders);
+
         javax.swing.GroupLayout panel_invoicesLayout = new javax.swing.GroupLayout(panel_invoices);
         panel_invoices.setLayout(panel_invoicesLayout);
         panel_invoicesLayout.setHorizontalGroup(
             panel_invoicesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_invoicesLayout.createSequentialGroup()
+            .addGroup(panel_invoicesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 959, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panel_invoicesLayout.setVerticalGroup(
             panel_invoicesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panel_invoicesLayout.createSequentialGroup()
-                .addGap(64, 64, 64)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 420, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(135, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_invoicesLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panel_invoicesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane4)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
-        tab_adminstrator.addTab("Invoices", panel_invoices);
+        tab_adminstrator.addTab("Invoices and Orders", panel_invoices);
 
         lb_icon.setHorizontalAlignment(javax.swing.JLabel.CENTER);
         lb_icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Icon.png"))); // NOI18N
@@ -448,24 +459,46 @@ public class PanelAdminstrator extends javax.swing.JPanel {
 
     private void btn_OrdersDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_OrdersDoneActionPerformed
         if (!tf_date.getText().isEmpty() && !tf_totalCost.getText().isEmpty()) {
-            Order order = orderModel.getOrder();
-            order.setId(-1);
-            order.setTotalCost(Integer.parseInt(tf_totalCost.getText()));
-            order.setDateArriving(tf_date.getDate());
-            order.setDateMade(LocalDate.now());
-            db.insertOrder(order);
+            if (tf_totalCost.getText().matches("-?\\d+")) {
+                if (!orderModel.isEmpty()) {
+                    Order order = orderModel.getOrder();
+                    order.setId(-1);
+                    order.setTotalCost(Integer.parseInt(tf_totalCost.getText()));
+                    order.setDateArriving(tf_date.getDate());
+                    order.setDateMade(LocalDate.now());
+                    boolean check = db.insertOrder(order);
+                    if (check) {
+                        JOptionPane.showMessageDialog(null, "Order successfully created.");
+                        listModel.setSize(0);
+                        getOrdersList();
+                        tab_adminstrator.setSelectedIndex(3);
+                    }
+                    orderModel.setRowCount(0);
+                    orderModel.fireTableDataChanged();
+                } else {
+                    JOptionPane.showMessageDialog(null, "No items added.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid total cost.");
+            }
         }
     }//GEN-LAST:event_btn_OrdersDoneActionPerformed
 
     private void btn_addItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addItemActionPerformed
         if (!tf_id.getText().isEmpty() && !tf_count.getText().isEmpty()) {
-            orderModel.addRow(Integer.parseInt(tf_id.getText()), Integer.parseInt(tf_count.getText()));
+            if (tf_id.getText().matches("-?\\d+") && tf_count.getText().matches("-?\\d+")) {
+                orderModel.addRow(Integer.parseInt(tf_id.getText()), Integer.parseInt(tf_count.getText()));
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid item ID or count.");
+            }
         }
     }//GEN-LAST:event_btn_addItemActionPerformed
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
         fillInvoices();
         getItems();
+        listModel.setSize(0);
+        getOrdersList();
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     public void getEmployees() {
@@ -478,6 +511,21 @@ public class PanelAdminstrator extends javax.swing.JPanel {
             }
         } catch (SQLException ex) {
             Logger.getLogger(PanelAdminstrator.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void getOrdersList() {
+        ResultSet rs = db.getOrders("SELECT otr.orderID, totalCost, arrivingDate FROM Orders as o,OrderToRecieve as otr WHERE o.orderID = otr.orderID ");
+        int previousID = -1;
+        try {
+            while (rs.next()) {
+                if (rs.getInt("orderID") != previousID) {
+                    previousID = rs.getInt("orderID");
+                    listModel.addElement("ID: " + rs.getInt("orderID") + " Cost: " + rs.getInt("totalCost") + " ArrivingDate: " + rs.getString("arrivingDate"));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PanelAccountant.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -503,7 +551,9 @@ public class PanelAdminstrator extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel lb_icon;
+    private javax.swing.JList<String> ls_orders;
     private javax.swing.JPanel panel_employee;
     private javax.swing.JPanel panel_invoices;
     private javax.swing.JPanel panel_orders;
@@ -530,6 +580,7 @@ public class PanelAdminstrator extends javax.swing.JPanel {
     private InvoiceModel invoiceModel;
     private ItemModel itemModel;
     private DbHelper db = new DbHelper();
+    private DefaultListModel<String> listModel = new DefaultListModel<>();
 
     private void fillInvoices() {
         invoiceModel.setRowCount(0);

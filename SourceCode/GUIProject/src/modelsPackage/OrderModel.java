@@ -11,9 +11,22 @@ public class OrderModel extends AbstractTableModel {
         this.order = order;
         this.headers = headers;
     }
+    
+    public boolean isEmpty(){
+        if(order.getItemsID().isEmpty())
+            return true;
+        return false;
+    }
 
     public Order getOrder() {
         return order;
+    }
+    
+    public void setRowCount(int i){
+        while(order.getItemsID().size() > i){
+            order.getItemsID().remove(order.getItemsID().size() - 1);
+            order.getItemsCount().remove(order.getItemsCount().size() - 1);
+        }
     }
     
     public boolean addRow(int id, int count){

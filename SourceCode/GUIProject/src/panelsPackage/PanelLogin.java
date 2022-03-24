@@ -10,6 +10,7 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
@@ -151,6 +152,9 @@ public class PanelLogin extends javax.swing.JPanel {
                 if(position.equals("Adminstrator")){
                     l.show(mainPanel, "admin");
                 }
+            }
+            else {
+                //TODO
             }
         }
     }//GEN-LAST:event_btn_loginActionPerformed

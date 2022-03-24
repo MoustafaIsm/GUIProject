@@ -203,7 +203,7 @@ public class PanelAccountant extends javax.swing.JPanel {
 
     private ItemModel itemModel;
     private DbHelper db = new DbHelper();
-    private DefaultListModel<String> listModel;
+    private DefaultListModel<String> listModel = new DefaultListModel<>();;
 
     private void getItems() {
         itemModel.setRowCount(0);
@@ -219,7 +219,6 @@ public class PanelAccountant extends javax.swing.JPanel {
     }
 
     private DefaultListModel getOrdersList() {
-        listModel = new DefaultListModel<>();
         ResultSet rs = db.getOrders("SELECT otr.orderID, totalCost, arrivingDate FROM Orders as o,OrderToRecieve as otr WHERE o.orderID = otr.orderID ");
         int previousID = -1;
         try {

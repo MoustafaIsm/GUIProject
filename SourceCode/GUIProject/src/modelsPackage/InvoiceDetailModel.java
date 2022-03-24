@@ -16,6 +16,12 @@ public class InvoiceDetailModel extends AbstractTableModel {
         return invoice;
     }
     
+    public boolean isEmpty(){
+        if(invoice.getItemsID().isEmpty())
+            return true;
+        return false;
+    }
+    
     public boolean addRow(int id, int count){
         boolean check = false;
         for(int i = 0; i < invoice.getItemsID().size(); i++){

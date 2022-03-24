@@ -22,8 +22,10 @@ public class DbHelper {
 
     private Connection con;
     private String url;
+    private int flag;
 
     public DbHelper() {
+        flag = 0;
         con = null;
         url = "jdbc:sqlserver://localhost:1433;databaseName=WSMS_database;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
         try {
@@ -32,6 +34,14 @@ public class DbHelper {
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    public int getFlag() {
+        return flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
     }
 
     public void closeConnection() {
@@ -123,7 +133,7 @@ public class DbHelper {
         }
     }
 
-    public void insertOrder(Order order) {
+    public boolean insertOrder(Order order) {
         int id = -1;
         String query1 = "INSERT Orders VALUES ('" + order.getDateMade() + "', " + order.getTotalCost() + ")";
         try {
@@ -139,8 +149,14 @@ public class DbHelper {
                     st.executeUpdate(query2);
                 }
             }
+            return true;
         } catch (SQLException ex) {
-            Logger.getLogger(DbHelper.class.getName()).log(Level.SEVERE, null, ex);
+            if(ex.getMessage().contains("FK__OrderToRe__itemI")){
+                JOptionPane.showMessageDialog(null, "Invalid item ID.");
+            } else {
+                System.out.println(ex.getMessage());
+            }
+            return false;
         }
 
     }
@@ -173,7 +189,16 @@ public class DbHelper {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DbHelper.class.getName()).log(Level.SEVERE, null, ex);
+            flag = 1;
+            if (ex.getMessage().contains("FK__InvoicesM__itemI")) {
+                JOptionPane.showMessageDialog(null, "Invalid item ID.");
+            } else {
+                if (ex.getMessage().contains("FK__Invoices__employ")) {
+                    JOptionPane.showMessageDialog(null, "Invalid employee ID.");
+                } else {
+                    System.out.println(ex.getMessage());
+                }
+            }
         }
     }
 
@@ -198,8 +223,9 @@ public class DbHelper {
                 Statement st = con.createStatement();
                 ResultSet rs = st.executeQuery(query1);
                 int stock = 0;
-                if(rs.next())
+                if (rs.next()) {
                     stock = rs.getInt("stockCount");
+                }
                 int newStock = stock + itemCount.get(i);
                 String query2 = "UPDATE Items SET stockCount=" + newStock + "WHERE itemID=" + itemId.get(i);
                 st.executeUpdate(query2);
@@ -218,14 +244,15 @@ public class DbHelper {
                 Statement st = con.createStatement();
                 ResultSet rs = st.executeQuery(query1);
                 int stock = 0;
-                if(rs.next())
+                if (rs.next()) {
                     stock = rs.getInt("stockCount");
+                }
                 int newStock = stock - itemCount.get(i);
-                if(newStock < 0){
+                if (newStock < 0 && flag == 0) {
                     JOptionPane.showMessageDialog(null, "Not Enough Stock.");
                     break;
                 }
-                    
+
                 String query2 = "UPDATE Items SET stockCount=" + newStock + "WHERE itemID=" + itemId.get(i);
                 st.executeUpdate(query2);
             } catch (SQLException ex) {
